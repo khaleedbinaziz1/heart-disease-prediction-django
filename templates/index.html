@@ -1,209 +1,242 @@
-{% load static %}
-{% load fontawesome_5 %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Heart Disease Prediction App</title>
-    <link href="{% static 'w3.css' %}" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f6f9;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #d4edda;
             color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .header {
-            background-color: #3b5998;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
         .container {
-            width: 80%;
-            margin: auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
         }
 
-        .container h3 {
-            color: #3b5998;
+        .container:hover {
+            transform: scale(1.02);
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            color: green;
+            margin-bottom: 50px;
+            text-transform: uppercase;
         }
 
         .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1rem;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-control {
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: green;
+            box-shadow: none;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            margin-bottom: 0;
             width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        .btn {
-            background-color: #3b5998;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn:hover {
-            background-color: #2a4373;
-        }
-
-        .center {
             text-align: center;
-            margin-top: 20px;
         }
 
-        a {
-            color: white;
-            text-decoration: none;
+        .table thead th {
+            background-color: green;
+            color: #fff;
+            font-weight: 700;
+            padding: 15px;
+            text-transform: uppercase;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f5f9;
+            cursor: pointer;
+        }
+
+        .table tbody tr.selected-row {
+            background-color: green;
+            color: #fff;
+        }
+
+        .table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+
+        .btn-primary {
+            background-color: green;
+            border-color: green;
+            font-size: 1.3rem;
+            font-weight: 700;
+            width: 100%;
+            padding: 18px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .table-container {
+                max-height: 200px;
+            }
+
+            .btn-primary {
+                font-size: 1rem;
+                padding: 12px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    Heart Disease Prediction App
-</div>
+    <div class="container">
+        <h1>Heart Disease Prediction</h1>
 
-<div class="container">
-    <form action="predict">
-        <div class="w3-row">
-            <div class="w3-half">
-                <div class="form-group">
-                    <label>Age</label>
-                    <input type="text" name="age" placeholder="Years" required />
-                </div>
-                <div class="form-group">
-                    <label>Sex</label>
-                    <select name="sex" required>
-                        <option value="" disabled selected>Choose your option</option>
-                        <option value="1">Male</option>
-                        <option value="0">Female</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Chest pain type</label>
-                    <select name="cp" required>
-                        <option value="0">Typical Angina</option>
-                        <option value="1">Atypical Angina</option>
-                        <option value="2">Non-Anginal Pain</option>
-                        <option value="3">Asymptomatic</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Resting blood pressure</label>
-                    <input type="text" name="trestbps" placeholder="in mm Hg" required />
-                </div>
-                <div class="form-group">
-                    <label>Serum cholesterol</label>
-                    <input type="text" name="chol" placeholder="in mg/dl" required />
-                </div>
-                <div class="form-group">
-                    <label>Fasting blood sugar > 120 mg/dl</label>
-                    <select name="fbs" required>
-                        <option value="0">Yes</option>
-                        <option value="1">No</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Resting ECG results</label>
-                    <select name="restecg" required>
-                        <option value="0">Normal</option>
-                        <option value="1">Having ST-T wave abnormality</option>
-                        <option value="2">Left ventricular hypertrophy</option>
-                    </select>
-                </div>
-            </div>
-            <div class="w3-half">
-                <div class="form-group">
-                    <label>Maximum heart rate achieved</label>
-                    <input type="text" name="thalach" required />
-                </div>
-                <div class="form-group">
-                    <label>Exercise induced angina</label>
-                    <select name="exang" required>
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>ST depression induced by exercise relative to rest</label>
-                    <input type="text" name="oldpeak" required />
-                </div>
-                <div class="form-group">
-                    <label>Slope of the peak exercise ST segment</label>
-                    <select name="slope" required>
-                        <option value="0">Upsloping</option>
-                        <option value="1">Flat</option>
-                        <option value="2">Downsloping</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Number of major vessels (0-3) colored by fluoroscopy</label>
-                    <select name="ca" required>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Thalium (thal)</label>
-                    <select name="thal" required>
-                        <option value="0">Normal</option>
-                        <option value="1">Fixed Defect</option>
-                        <option value="2">Reversible Defect</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Age Category</label>
-                    <select name="age_category" required>
-                        <option value="0">Youth</option>
-                        <option value="1">Adult</option>
-                        <option value="2">Old</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="center">
+        <form action="{% url 'predict' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- CSV File Upload -->
             <div class="form-group">
-                <label><h3>Select ML Algorithm</h3></label>
-                <select name="model_choice" required>
-                    <option value="" disabled selected>Select Model</option>
-                    <option value="rfmodel">Random Forest</option>
-                    <option value="knnmodel">K-Nearest Neighbour</option>
-                    <option value="svcmodel">Support Vector Machine</option>
-                </select>
+                <label for="csv_file">Upload CSV File:</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" class="form-control" required>
             </div>
-            <button class="btn"><a href="{% url 'preview' %}">Dataset</a></button>
-            <input type="submit" value="Predict" class="btn">
-        </div>
-    </form>
-</div>
 
+            <!-- Patient Data Table -->
+            <div class="table-container">
+                <table class="table" id="data_table">
+                    <thead>
+                        <!-- Table headers will be dynamically populated -->
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Hidden Input for Selected Patient Data -->
+            <input type="hidden" name="selected_patient_data" id="selected_patient_data">
+
+            <!-- Submit Button -->
+            <div class="text-center mt-5">
+                <button type="submit" class="btn btn-primary">Predict</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.querySelector('input[name="csv_file"]').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const contents = e.target.result;
+                    const lines = contents.split('\n');
+                    const table = document.getElementById('data_table');
+                    const tbody = table.querySelector('tbody');
+                    const thead = table.querySelector('thead');
+    
+                    // Clear previous table data
+                    tbody.innerHTML = '';
+                    thead.innerHTML = '';
+
+                    // Populate table headers
+                    const headers = lines[0].split(',');
+                    const headerRow = document.createElement('tr');
+                    headers.forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header.trim();
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+    
+                    // Populate table rows
+                    lines.slice(1).forEach((line) => {
+                        if (line.trim()) {
+                            const row = document.createElement('tr');
+                            const cells = line.split(',');
+
+                            cells.forEach(cell => {
+                                const td = document.createElement('td');
+                                td.textContent = cell.trim();
+                                row.appendChild(td);
+                            });
+
+                            // Add click event to select the patient row
+                            row.addEventListener('click', function() {
+                                document.querySelectorAll('#data_table tbody tr').forEach(r => r.classList.remove('selected-row'));
+                                row.classList.add('selected-row');
+
+                                // Store the selected row's data in a hidden input, excluding the target column
+                                document.getElementById('selected_patient_data').value = JSON.stringify(cells.slice(0, -1)); // Exclude last element (target)
+                            });
+    
+                            tbody.appendChild(row);
+                        }
+                    });
+
+                    // Handle case where CSV might have no valid rows
+                    if (tbody.innerHTML === '') {
+                        alert('No valid data found in the CSV file.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+    </script>
+    
 </body>
 </html>

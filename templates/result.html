@@ -1,35 +1,237 @@
-{% load static %}
-{% load fontawesome_5 %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My Django</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heart Disease Prediction Result</title>
+    {% load static %}
     <link href="{% static 'w3.css' %}" rel="stylesheet" />
-    <link href="{% static 'fontawesome/css/all.min.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            background: linear-gradient(to right, #f4f4f9, #d9d9d9);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .header {
+            background-color: #008080;
+            color: white;
+            padding: 1.5rem;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .result-box {
+            margin: 1.5rem 0;
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .result-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .healthy {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .at-risk {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .advice, .info {
+            margin-top: 1rem;
+            background-color: #e2e3e5;
+            border-left: 5px solid #007bff;
+            padding: 1.5rem;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .info h5 {
+            margin-top: 0;
+            font-weight: bold;
+        }
+
+        .error-box {
+            background-color: #ffcccc;
+            color: #a94442;
+            padding: 1.5rem;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-back {
+            margin-top: 2rem;
+        }
+
+        .btn-back a {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-color: #008080;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.125rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-back a:hover {
+            background-color: #005f5f;
+            transform: scale(1.05);
+        }
+
+        @media screen and (max-width: 768px) {
+            .result-box {
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="w3-container w3-center w3-teal">
+    <div class="header">
         <h1>Heart Disease Prediction Result</h1>
     </div>
-    <br>
-    {% if result == 0 %}
-        <div class="w3-container w3-center w3-padding w3-round">
-            <h5 class="w3-red w3-card-4" style="width: 30%; margin: auto;"><span>Good, you are healthy, keep it up by less sugar</span></h5>
+
+    <div class="container">
+        {% if error %}
+        <div class="error-box w3-center">
+            <span>{{ error }}</span>
         </div>
-    {% elif result == 1 %}
-        <div class="w3-container w3-center w3-padding w3-round">
-            <h1 class="w3-card-4" style="width: 30%; margin: auto;">You may be suffering from heart disease; you need to see a doctor</h1>
+        {% elif result is not None %}
+            {% if result == 0 %}
+            <div class="result-box healthy">
+                <h5>Good, you are healthy. Keep it up!</h5>
+                <div class="advice">
+                    <h5>Health Tips:</h5>
+                    <ul>
+                        <li>Maintain a balanced diet rich in fruits and vegetables.</li>
+                        <li>Engage in regular physical activity (at least 150 minutes per week).</li>
+                        <li>Get regular check-ups and screenings.</li>
+                    </ul>
+                </div>
+            </div>
+            {% elif result == 1 %}
+            <div class="result-box at-risk">
+                <h1>You may be at risk of heart disease.</h1>
+                <h5>Please consult a doctor for further evaluation.</h5>
+                <div class="advice">
+                    <h5>Health Advice:</h5>
+                    <ul>
+                        <li>Consider a heart-healthy diet low in saturated fats and high in fiber.</li>
+                        <li>Engage in at least 150 minutes of moderate aerobic activity each week.</li>
+                        <li>Manage stress through mindfulness and relaxation techniques.</li>
+                        <li>Limit alcohol intake and quit smoking if applicable.</li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Display the model accuracy and prediction probability -->
+            <div class="result-box">
+                <h5>Prediction Accuracy: {{ accuracy }}%</h5>
+                <h5>Prediction Probability: {{ prediction_prob|floatformat:2 }}</h5>
+            </div>
+
+            <!-- Result Summary and Explanation -->
+            <div class="result-box">
+                <h5>Result Summary:</h5>
+                <p>{{ result_text }}</p>
+            </div>
+
+            <!-- Explanation of the model and how it works -->
+            <div class="info">
+                <h5>How the Prediction Works</h5>
+                <p>Our model uses a Support Vector Classifier (SVC) with a linear kernel to predict heart disease. 
+                   The features you provided, such as cholesterol levels, blood pressure, and other health metrics, 
+                   are analyzed by the model to determine the likelihood of heart disease.</p>
+                <p>Before making a prediction, we scale your input data to ensure all features are on a comparable scale. 
+                   This helps the model make more accurate predictions.</p>
+                <p>The prediction probability score, as shown above, gives an indication of how confident the model 
+                   is in its prediction. A higher value means a stronger likelihood of the predicted outcome.</p>
+            </div>
+
+            <!-- Feature Importance (Optional) -->
+            <div class="info">
+                <h5>Key Features Used in the Prediction</h5>
+                <p>The following health indicators are important in assessing heart disease risk:</p>
+                <ul>
+                    <li>Age: Older individuals are at higher risk.</li>
+                    <li>Cholesterol Levels: High cholesterol can lead to clogged arteries.</li>
+                    <li>Blood Pressure: High blood pressure puts a strain on the heart.</li>
+                    <li>Smoking: Increases risk significantly.</li>
+                    <li>Diabetes: Affects the heart's ability to function properly.</li>
+                </ul>
+            </div>
+
+            <!-- Heart Disease Information -->
+            <div class="info">
+                <h5>About Heart Disease</h5>
+                <p>Heart disease refers to various conditions affecting the heart's structure and function. It includes coronary artery disease, arrhythmias, heart defects, and more.</p>
+                <h5>Common Symptoms:</h5>
+                <ul>
+                    <li>Chest pain or discomfort</li>
+                    <li>Shortness of breath</li>
+                    <li>Pain, numbness, or weakness in the legs or arms</li>
+                    <li>Palpitations</li>
+                    <li>Fatigue</li>
+                </ul>
+                <h5>Risk Factors:</h5>
+                <ul>
+                    <li>High blood pressure</li>
+                    <li>High cholesterol</li>
+                    <li>Diabetes</li>
+                    <li>Smoking</li>
+                    <li>Obesity</li>
+                    <li>Family history of heart disease</li>
+                </ul>
+                <h5>Resources:</h5>
+                <ul>
+                    <li><a href="https://www.heart.org" target="_blank">American Heart Association</a></li>
+                    <li><a href="https://www.cdc.gov/heartdisease" target="_blank">CDC Heart Disease Page</a></li>
+                    <li><a href="https://www.nhlbi.nih.gov/health-topics/heart-disease" target="_blank">NHLBI Heart Disease Information</a></li>
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="btn-back">
+            <a href="{% url 'index' %}">Back to Home</a>
         </div>
-    {% endif %}
-    <br>
-    <div class="w3-container w3-center">
-        <button class="w3-teal w3-center w3-padding w3-round w3-border-teal">
-            <a href="{% url 'index' %}">Back</a>
-        </button>
     </div>
-    <br>
-    
 </body>
 </html>
